@@ -15,6 +15,7 @@
 
 enum LED_States { LED_SMStart, LED_Change_Unpress, LED_Pause_Press, LED_Pause_Unpress, LED_Change_Press } LED_State;
 unsigned char tempB;
+unsigned char direct; // 0x00 for shift left and 0x01 for shift right
 
 void TickLED()
 {
@@ -22,6 +23,7 @@ void TickLED()
 	{
 		case LED_SMStart:
 			tempB = 0x01;
+			direct = 0x00;
 			LED_State = LED_Change_Unpress;
 			break;
 		case LED_Change_Unpress:
@@ -31,13 +33,26 @@ void TickLED()
 			}
 			else if ((PINA & 0x01) == 0x01)
 			{
-				if (tempB >= 0x04)
+				if (tempB == 0x04)
 				{
-					tempB = 0x01;
+					tempB = tempB >> 1;
+					direct = 0x01;
 				}
-				else
+				else if (tempB == 0x02)
+				{
+					if(direct)
+					{
+						tempB = tempB >> 1;
+					}
+					else
+					{
+						tempB = tempB << 1;
+					}
+				}
+				else if (tempB == 0x01)
 				{
 					tempB = tempB << 1;
+					direct = 0x00;
 				}
 				LED_State = LED_Change_Unpress;
 			}
@@ -55,17 +70,30 @@ void TickLED()
 		case LED_Pause_Unpress:
 			if ((PINA & 0x01) == 0x00)
 			{
-				if (tempB >= 0x04)
+				if (tempB == 0x04)
 				{
-					tempB = 0x01;
+					tempB = tempB >> 1;
+					direct = 0x01;
 				}
-				else
+				else if (tempB == 0x02)
+				{
+					if(direct)
+					{
+						tempB = tempB >> 1;
+					}
+					else
+					{
+						tempB = tempB << 1;
+					}
+				}
+				else if (tempB == 0x01)
 				{
 					tempB = tempB << 1;
+					direct = 0x00;
 				}
 				LED_State = LED_Change_Press;
 			}
-			else if ((PINA & 0x01) == 0x00)
+			else if ((PINA & 0x01) == 0x01)
 			{
 				LED_State = LED_Pause_Unpress;
 			}
@@ -73,25 +101,51 @@ void TickLED()
 		case LED_Change_Press:
 			if ((PINA & 0x01) == 0x01)
 			{
-				if (tempB >= 0x04)
+				if (tempB == 0x04)
 				{
-					tempB = 0x01;
+					tempB = tempB >> 1;
+					direct = 0x01;
 				}
-				else
+				else if (tempB == 0x02)
+				{
+					if(direct)
+					{
+						tempB = tempB >> 1;
+					}
+					else
+					{
+						tempB = tempB << 1;
+					}
+				}
+				else if (tempB == 0x01)
 				{
 					tempB = tempB << 1;
+					direct = 0x00;
 				}
 				LED_State = LED_Change_Unpress;
 			}
 			else if ((PINA & 0x01) == 0x00)
 			{
-				if (tempB >= 0x04)
+				if (tempB == 0x04)
 				{
-					tempB = 0x01;
+					tempB = tempB >> 1;
+					direct = 0x01;
 				}
-				else
+				else if (tempB == 0x02)
+				{
+					if(direct)
+					{
+						tempB = tempB >> 1;
+					}
+					else
+					{
+						tempB = tempB << 1;
+					}
+				}
+				else if (tempB == 0x01)
 				{
 					tempB = tempB << 1;
+					direct = 0x00;
 				}
 				LED_State = LED_Change_Press;
 			}
